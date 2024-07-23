@@ -1,4 +1,7 @@
+import 'package:cashier_app/Provider/provider_db.dart';
+import 'package:cashier_app/View/product_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,12 +12,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => ProviderDB()..init(),
+      child: const MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: ProductView()
+        )
     );
   }
 }
