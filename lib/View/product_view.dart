@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cashier_app/View/product_buy.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/Json/product.dart';
 import 'package:cashier_app/Provider/provider_db.dart';
@@ -6,6 +7,7 @@ import 'package:cashier_app/View/product_add.dart';
 import 'package:cashier_app/View/product_update.dart';
 import 'package:provider/provider.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:intl/intl.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -16,6 +18,8 @@ class ProductView extends StatefulWidget {
 
 class _ProductViewState extends State<ProductView> {
   final TextEditingController _searchController = TextEditingController();
+  final currency =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
   Future<void> _scanBarcode() async {
     try {
@@ -29,7 +33,7 @@ class _ProductViewState extends State<ProductView> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductUpdate(
+              builder: (context) => ProductBuy(
                 product: foundProduct,
               ),
             ),
@@ -117,8 +121,21 @@ class _ProductViewState extends State<ProductView> {
                               height: 50,
                               fit: BoxFit.cover,
                             )
-                          : const Icon(Icons.image),
-                      title: Text(product.name),
+                          : const Icon(Icons.image, size: 50),
+                      title: Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(currency.format(product.price)),
+                          Text('Stock: ${product.stock.toString()}'),
+                        ],
+                      ),
                       trailing: IconButton(
                         onPressed: () => notifier.deleteProduct(product),
                         icon: const Icon(Icons.delete, color: Colors.red),
@@ -126,7 +143,8 @@ class _ProductViewState extends State<ProductView> {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProductUpdate(product: product)),
+                          builder: (context) => ProductUpdate(product: product),
+                        ),
                       ),
                     );
                   },
