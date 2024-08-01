@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cashier_app/View/Components/textfield.dart';
+import 'package:cashier_app/const.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/Json/product.dart';
 import 'package:cashier_app/Provider/provider_db.dart';
@@ -104,62 +106,73 @@ class _ProductUpdateState extends State<ProductUpdate> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Update Product"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: _updateProduct,
-              icon: const Icon(Icons.check),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: _scanBarcode,
-                child: const Text("Scan Product Code"),
+                icon: const Icon(Icons.qr_code_scanner, size: 28),
+                label: const Text(
+                  "Scan Product Code",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  foregroundColor: secondaryAccentColor,
+                ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: productCode,
-                decoration: const InputDecoration(
-                  hintText: "Product Code",
-                ),
-              ),
-              TextFormField(
-                controller: name,
-                decoration: const InputDecoration(
-                  hintText: "Product Name",
-                ),
-              ),
-              TextFormField(
-                controller: price,
-                decoration: const InputDecoration(
-                  hintText: "Product Price",
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              TextFormField(
-                controller: stock,
-                decoration: const InputDecoration(
-                  hintText: "Product Stock",
-                ),
-                keyboardType: TextInputType.number,
-              ),
+              InputField(hintText: 'Product Code', controller: productCode),
+              InputField(hintText: 'Product Name', controller: name),
+              InputField(
+                  hintText: 'Product Price',
+                  controller: price,
+                  keyboardType: TextInputType.number),
+              InputField(
+                  hintText: 'Product Stock',
+                  controller: stock,
+                  keyboardType: TextInputType.number),
               const SizedBox(height: 20),
               if (_newImage != null)
                 Image.file(_newImage!)
               else if (_oldImagePath != null)
                 Image.file(File(_oldImagePath!)),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () => _showImageSourceActionSheet(context),
-                child: const Text("Update Image"),
+                icon: const Icon(Icons.image, size: 28),
+                label: const Text(
+                  "Update image",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                  foregroundColor: secondaryAccentColor,
+                ),
               ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          height: 50.0,
+          child: ElevatedButton(
+            onPressed: _updateProduct,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: primaryAccentColor,
+            ),
+            child: const Text(
+              "Save",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),

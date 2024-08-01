@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cashier_app/View/Components/textfield.dart';
+import 'package:cashier_app/const.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/Json/product.dart';
 import 'package:cashier_app/Provider/provider_db.dart';
@@ -49,7 +51,6 @@ class _ProductAddState extends State<ProductAdd> {
         });
       }
     } catch (e) {
-      // Tambahkan error handling
       print('Error picking image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to pick image: $e')),
@@ -94,7 +95,6 @@ class _ProductAddState extends State<ProductAdd> {
         productCode.text = result.rawContent;
       });
     } catch (e) {
-      // Tambahkan error handling
       print('Error scanning barcode: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to scan barcode: $e')),
@@ -107,15 +107,6 @@ class _ProductAddState extends State<ProductAdd> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add New Product"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: _addProduct,
-              icon: const Icon(Icons.check),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -124,16 +115,22 @@ class _ProductAddState extends State<ProductAdd> {
             key: _formKey,
             child: Column(
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: _scanBarcode,
-                  child: const Text("Scan Product Code"),
+                  icon: const Icon(Icons.qr_code_scanner, size: 28),
+                  label: const Text(
+                    "Scan Product Code",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                    foregroundColor: secondaryAccentColor,
+                  ),
                 ),
                 const SizedBox(height: 20),
-                TextFormField(
+                InputField(
+                  hintText: 'Product Code',
                   controller: productCode,
-                  decoration: const InputDecoration(
-                    hintText: "Product Code",
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the product code';
@@ -141,11 +138,9 @@ class _ProductAddState extends State<ProductAdd> {
                     return null;
                   },
                 ),
-                TextFormField(
+                InputField(
+                  hintText: 'Product Name',
                   controller: name,
-                  decoration: const InputDecoration(
-                    hintText: "Product Name",
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter the product name';
@@ -153,11 +148,9 @@ class _ProductAddState extends State<ProductAdd> {
                     return null;
                   },
                 ),
-                TextFormField(
+                InputField(
+                  hintText: 'Product Price',
                   controller: price,
-                  decoration: const InputDecoration(
-                    hintText: "Product Price",
-                  ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -169,11 +162,9 @@ class _ProductAddState extends State<ProductAdd> {
                     return null;
                   },
                 ),
-                TextFormField(
+                InputField(
+                  hintText: 'Product Stock',
                   controller: stock,
-                  decoration: const InputDecoration(
-                    hintText: "Product Stock",
-                  ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -194,11 +185,39 @@ class _ProductAddState extends State<ProductAdd> {
                       )
                     : const Text('No image selected'),
                 const SizedBox(height: 20),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () => _showImageSourceActionSheet(context),
-                  child: const Text("Add Image"),
+                  icon: const Icon(Icons.image, size: 28),
+                  label: const Text(
+                    "Add image",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                    foregroundColor: secondaryAccentColor,
+                  ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          height: 50.0,
+          child: ElevatedButton(
+            onPressed: _addProduct,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: primaryAccentColor,
+            ),
+            child: const Text(
+              "Save",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

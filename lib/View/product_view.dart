@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:cashier_app/View/product_buy.dart';
+import 'package:cashier_app/View/product_purchase.dart';
+import 'package:cashier_app/const.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/Json/product.dart';
 import 'package:cashier_app/Provider/provider_db.dart';
@@ -7,7 +8,6 @@ import 'package:cashier_app/View/product_add.dart';
 import 'package:cashier_app/View/product_update.dart';
 import 'package:provider/provider.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
-import 'package:intl/intl.dart';
 
 class ProductView extends StatefulWidget {
   const ProductView({super.key});
@@ -18,8 +18,6 @@ class ProductView extends StatefulWidget {
 
 class _ProductViewState extends State<ProductView> {
   final TextEditingController _searchController = TextEditingController();
-  final currency =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
   Future<void> _scanBarcode() async {
     try {
@@ -33,7 +31,7 @@ class _ProductViewState extends State<ProductView> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductBuy(
+              builder: (context) => ProductPurchase(
                 product: foundProduct,
               ),
             ),
@@ -49,6 +47,43 @@ class _ProductViewState extends State<ProductView> {
     }
   }
 
+  void _confirmDelete(Product product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete ${product.name}?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: secondaryColor,
+                foregroundColor: secondaryAccentColor,
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                final notifier =
+                    Provider.of<ProviderDB>(context, listen: false);
+                notifier.deleteProduct(product);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: primaryAccentColor,
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProviderDB>(
@@ -57,21 +92,29 @@ class _ProductViewState extends State<ProductView> {
           floatingActionButton: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FloatingActionButton(
+              FloatingActionButton.extended(
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ProductAdd()));
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProductAdd()),
+                  );
                 },
-                child: const Icon(Icons.add),
+                backgroundColor: secondaryColor,
+                icon: const Icon(
+                  Icons.edit_square,
+                  color: Colors.black,
+                ),
+                label: const Text(
+                  'Add',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
                 onPressed: _scanBarcode,
                 icon: const Icon(Icons.qr_code_scanner, size: 28),
                 label: const Text(
-                  "Scan Barcode",
+                  "Purchase",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -80,8 +123,8 @@ class _ProductViewState extends State<ProductView> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
+                  backgroundColor: primaryColor,
+                  foregroundColor: primaryAccentColor,
                   elevation: 5,
                 ),
               ),
@@ -137,7 +180,7 @@ class _ProductViewState extends State<ProductView> {
                         ],
                       ),
                       trailing: IconButton(
-                        onPressed: () => notifier.deleteProduct(product),
+                        onPressed: () => _confirmDelete(product),
                         icon: const Icon(Icons.delete, color: Colors.red),
                       ),
                       onTap: () => Navigator.push(

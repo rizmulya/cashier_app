@@ -2,6 +2,8 @@
 
 Open source customizable cashier app built with Flutter.
 
+<img src="assets/preview.png" alt="cashier_app preview" width="521px">
+
 Features:
 - Manage product names, stock, prices, and photos.
 - Easy product search.
@@ -19,16 +21,17 @@ flutter pub get
 flutter run
 ```
 
+customizable:
+- assets/logo
+- lib/const.dart (primaryColor, currency, etc)
+- intro screen at main.dart
+
 build
 ```
 flutter build apk --release
 ```
 
-customize:
-- assets/logo
-- intro screen at main.dart
-
-# license
+## license
 
 This project is under the [MIT license](https://opensource.org/license/mit) 
 

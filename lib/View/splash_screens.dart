@@ -1,4 +1,5 @@
 import 'package:cashier_app/View/product_view.dart';
+import 'package:cashier_app/const.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.yellow,
+        color: primaryColor,
         child: Center(
           child: Image.asset('assets/logo.png'),
         ),
@@ -51,27 +52,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  final List<Map<String, String>> onboardingData = [
-    {
-      'title': 'Effortlessly Manage Your Products',
-      'subtitle':
-          'Track product details, stock, prices, and photos effortlessly.',
-      'image': 'assets/onboarding1.png'
-    },
-    {
-      'title': 'Fast Search and Barcode Scanning',
-      'subtitle':
-          'Quickly search and use barcode scanning for easy input and purchases.',
-      'image': 'assets/onboarding2.png'
-    },
-    {
-      'title': 'Auto Calculate and Update Stock',
-      'subtitle':
-          'Automatically calculate totals and update stock with each purchase.',
-      'image': 'assets/onboarding3.png'
-    }
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Expanded(
                 flex: 3,
                 child: Container(
-                  color: Colors.yellow,
+                  color: primaryColor,
                   child: Center(
                     child: Image.asset(onboardingData[index]['image']!),
                   ),
@@ -127,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               height: 12,
                               decoration: BoxDecoration(
                                 color: dotIndex == _currentPage
-                                    ? Colors.blue
+                                    ? primaryColor
                                     : Colors.grey,
                                 shape: BoxShape.circle,
                               ),
@@ -144,13 +124,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         builder: (_) => const ProductView()));
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.yellow,
+                                backgroundColor: primaryColor,
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                               child: const Text(
                                 'Next',
                                 style: TextStyle(
-                                    color: Colors.black87,
+                                    color: primaryAccentColor,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -161,17 +141,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: ElevatedButton(
                               onPressed: () {
                                 _controller.nextPage(
-                                    duration: const Duration(milliseconds: 300),
+                                    duration: const Duration(milliseconds: 250),
                                     curve: Curves.easeIn);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.yellow,
+                                backgroundColor: primaryColor,
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                               child: const Text(
                                 'Next',
                                 style: TextStyle(
-                                    color: Colors.black87,
+                                    color: primaryAccentColor,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),

@@ -1,30 +1,28 @@
 import 'dart:io';
+import 'package:cashier_app/const.dart';
 import 'package:flutter/material.dart';
 import 'package:cashier_app/Json/product.dart';
 import 'package:cashier_app/Provider/provider_db.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:intl/intl.dart';
 
-class ProductBuy extends StatefulWidget {
+class ProductPurchase extends StatefulWidget {
   final Product product;
-  const ProductBuy({super.key, required this.product});
+  const ProductPurchase({super.key, required this.product});
 
   @override
-  _ProductBuyState createState() => _ProductBuyState();
+  _ProductPurchaseState createState() => _ProductPurchaseState();
 }
 
-class _ProductBuyState extends State<ProductBuy> {
+class _ProductPurchaseState extends State<ProductPurchase> {
   final Map<Product, int> _cart = {};
   final TextEditingController _quantityController = TextEditingController();
-  final currency =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
   @override
   void initState() {
     super.initState();
-    _cart[widget.product] = 1; // Default quantity for the scanned product
+    _cart[widget.product] = 1;
   }
 
   void _incrementQuantity(Product product) {
@@ -70,6 +68,26 @@ class _ProductBuyState extends State<ProductBuy> {
     }
   }
 
+  Future<void> _checkoutProduct() async {
+    final notifier = Provider.of<ProviderDB>(context, listen: false);
+    _cart.forEach((product, quantity) {
+      notifier.updateProduct(
+        Product(
+          id: product.id,
+          name: product.name,
+          productCode: product.productCode,
+          price: product.price,
+          stock: product.stock - quantity,
+          image: product.image,
+          isCompleted: product.isCompleted,
+        ),
+        imageFile: null,
+        oldImagePath: product.image,
+      );
+    });
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final totalPrice = _cart.entries
@@ -78,48 +96,18 @@ class _ProductBuyState extends State<ProductBuy> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buy Products'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: () async {
-                final notifier =
-                    Provider.of<ProviderDB>(context, listen: false);
-                _cart.forEach((product, quantity) {
-                  notifier.updateProduct(
-                    Product(
-                      id: product.id,
-                      name: product.name,
-                      productCode: product.productCode,
-                      price: product.price,
-                      stock: product.stock - quantity,
-                      image: product.image,
-                      isCompleted: product.isCompleted,
-                    ),
-                    imageFile: null,
-                    oldImagePath: product.image,
-                  );
-                });
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.check),
-            ),
-          )
-        ],
+        title: const Text('Purchase Products'),
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: _scanBarcode,
-            child: const Text("Scan Product Code"),
-          ),
+          const SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
               itemCount: _cart.length,
               itemBuilder: (context, index) {
                 final product = _cart.keys.elementAt(index);
                 final quantity = _cart[product] ?? 1;
+                final totalProductPrice = product.price * quantity;
                 return ListTile(
                   leading: product.image != null
                       ? Image.file(
@@ -130,13 +118,7 @@ class _ProductBuyState extends State<ProductBuy> {
                         )
                       : const Icon(Icons.image, size: 50),
                   title: Text(product.name),
-                  subtitle: Row(
-                    children: [
-                      Text(currency.format(product.price)),
-                      const SizedBox(width: 8),
-                      Text('Stock: ${product.stock}'),
-                    ],
-                  ),
+                  subtitle: Text('Total: ${currency.format(totalProductPrice)}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -158,11 +140,47 @@ class _ProductBuyState extends State<ProductBuy> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Total: ${currency.format(totalPrice)}',
+              'Grand Total: ${currency.format(totalPrice)}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ElevatedButton(
+              onPressed: _checkoutProduct,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: secondaryColor,
+                foregroundColor: secondaryAccentColor,
+                minimumSize: const Size(100, 50),
+              ),
+              child: const Text(
+                "Checkout",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton.icon(
+              onPressed: _scanBarcode,
+              icon: const Icon(Icons.qr_code_scanner, size: 28),
+              label: const Text(
+                "Scan Again",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+                backgroundColor: primaryColor,
+                foregroundColor: primaryAccentColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
