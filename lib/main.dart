@@ -1,4 +1,5 @@
 import 'package:cashier_app/Provider/provider_db.dart';
+import 'package:cashier_app/View/splash_screens.dart';
 import 'package:cashier_app/View/product_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,8 @@ class MainApp extends StatelessWidget {
       create: (BuildContext context) => ProviderDB()..init(),
       child: const MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: ProductView()
+          // home: ProductView(),
+          home: SplashScreen(), // use intro screen
         )
     );
   }
